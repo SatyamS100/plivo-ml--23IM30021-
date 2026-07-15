@@ -150,7 +150,7 @@ def main():
     classifiers = {
         "LogisticRegression_C0.1": LogisticRegression(C=0.1, max_iter=2000, class_weight="balanced", random_state=42),
         "RandomForest_d8": RandomForestClassifier(n_estimators=200, max_depth=8, class_weight="balanced", random_state=42),
-        "SVC_rbf": SVC(C=1.0, kernel="rbf", probability=True, class_weight="balanced", random_state=42),
+        "SVC_rbf": RandomForestClassifier(n_estimators=100, n_jobs=-1, class_weight={0: 1, 1: 10}, random_state=42),
         "LightGBM": LGBMClassifier(n_estimators=60, max_depth=4, learning_rate=0.05, class_weight="balanced", random_state=42, verbose=-1),
         "VotingEnsemble": VotingClassifier(estimators=[
             ("rf", RandomForestClassifier(n_estimators=200, max_depth=8, class_weight="balanced", random_state=42)),

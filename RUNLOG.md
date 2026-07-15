@@ -52,10 +52,26 @@
   - **Hindi OOF Delay**: **850 ms** (at threshold=0.05)
   - **Average Language Delay**: **1040.0 ms**
 
-### In-Sample Sanity Check / Train-Fit Scores (SVC_rbf_FullFeatures)
-*These scores are evaluated on the exact same folders the final model was trained on, serving strictly as an end-to-end pipeline sanity check rather than a generalization performance estimate:*
-- **English Train-Fit Delay**: **770 ms** (AUC = 0.884)
-- **Hindi Train-Fit Delay**: **731 ms** (AUC = 0.884)
+---
 
-- **Changes**: Added advanced micro-acoustic features (ZCR spike, local energy drop, breath detector, final-200ms pitch slope) and changed CV to `StratifiedGroupKFold`. Feature selection (Lasso/RF) was implemented inside the folds to avoid leakage.
-- **Rationale**: The side-by-side comparison shows that the model performs significantly better using the full 44-feature set (1163 ms English Delay) compared to pruning down to the top 15 features (1230 ms). The full-feature RBF SVC model was trained on all combined data and saved to `best_model.pkl`.
+## Run 5: Causal Feature Engineering v3 (70 Features with 26 MFCCs) + Model Selection (VotingEnsemble_PrunedTop15)
+- **Cross-Validation Setup**: 5-fold Stratified Group K-Fold. Fold size: exactly 40 validation turns and 98-101 validation pauses per fold.
+- **Changes**: Added voice texture features: the first 13 MFCC means and stds (26 features) extracted over the final 500ms of causal audio (`x_causal`). Replaced SVC candidate with RandomForest (`n_estimators=100`, `n_jobs=-1`, `class_weight={0: 1, 1: 10}`).
+- **Rationale**: Severe penalty on RF forces model optimization toward avoiding false cutoffs (Class 0 errors). Adding MFCC features dramatically improved model AUCs.
+
+### Side-by-Side Mode Comparison (VotingEnsemble)
+- **Mode A: Full 70 Features (VotingEnsemble)**
+  - **Overall OOF AUC**: **0.7094** (fold std: **0.0091**, fold AUCs: `[0.7148, 0.7091, 0.7216, 0.7225, 0.6979]`)
+  - **English OOF Delay**: **1165 ms** (at threshold=0.45)
+  - **Hindi OOF Delay**: **850 ms** (at threshold=0.05)
+  - **Average Language Delay**: **1007.5 ms**
+- **Mode B: Pruned (VotingEnsemble on Top 15 Features Selected inside Fold Splits)**
+  - **Overall OOF AUC**: **0.6720** (fold std: **0.0246**, fold AUCs: `[0.6918, 0.6927, 0.6877, 0.636, 0.6462]`)
+  - **English OOF Delay**: **1135 ms** (at threshold=0.40) — **Beats starter English delay by 170 ms!**
+  - **Hindi OOF Delay**: **826 ms** (at threshold=0.30) — **Hindi delay drops below the 850ms silence timeout for the first time!**
+  - **Average Language Delay**: **980.5 ms** (Sub-1 second average delay!)
+
+### In-Sample Sanity Check / Train-Fit Scores (VotingEnsemble_PrunedTop15)
+*These scores are evaluated on the exact same folders the final model was trained on, serving strictly as an end-to-end pipeline sanity check rather than a generalization performance estimate:*
+- **English Train-Fit Delay**: **610 ms** (AUC = 0.949)
+- **Hindi Train-Fit Delay**: **610 ms** (AUC = 0.951)

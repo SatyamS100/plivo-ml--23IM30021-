@@ -6,6 +6,7 @@ hold pause — using it (e.g., pause duration) in features is a violation.
 """
 import numpy as np
 import soundfile as sf
+import librosa
 
 FRAME_MS = 25
 HOP_MS = 10
@@ -165,7 +166,7 @@ def extract_features_causal(x, sr, pause_start, pause_index):
     
     # Fallbacks if segment is empty
     if len(seg) < sr // 10:
-        return np.zeros(44, dtype=np.float32)
+        return np.zeros(70, dtype=np.float32)
         
     # Energy features
     e_local = frame_energy_db(seg, sr)
@@ -379,6 +380,23 @@ def extract_features_causal(x, sr, pause_start, pause_index):
         e_drop_last_10,
         breath_feature
     ], dtype=np.float32)
+    
+    # 5. Texture features: 13 MFCCs on final 500ms of x_causal
+    n_samples_500ms = int(0.500 * sr)
+    x_texture = x_causal[-n_samples_500ms:] if len(x_causal) >= n_samples_500ms else x_causal
+    if len(x_texture) >= 128:
+        mfcc_feats = librosa.feature.mfcc(y=x_texture, sr=sr, n_mfcc=13)
+        mfcc_mean = np.mean(mfcc_feats, axis=1)
+        mfcc_std = np.std(mfcc_feats, axis=1)
+    else:
+        mfcc_mean = np.zeros(13, dtype=np.float32)
+        mfcc_std = np.zeros(13, dtype=np.float32)
+        
+    features_vec = np.concatenate([
+        features_vec,
+        mfcc_mean,
+        mfcc_std
+    ])
     
     features_vec = np.nan_to_num(features_vec, nan=0.0, posinf=0.0, neginf=0.0)
     

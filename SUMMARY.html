@@ -589,6 +589,9 @@
             <div class="panel">
                 <div class="panel-title">Testing Tools & Generalization</div>
                 <div class="bullet-point">
+                    <strong>In-Sample Sanity Check (Not Generalization):</strong> Running [predict.py](file:///c:/Users/ok/Desktop/Plivo/predict.py) using the final fitted model on its own training directories yields response delays of <strong>770 ms</strong> (English) and <strong>731 ms</strong> (Hindi). Because this model was trained on this same data, these scores are optimistic train-fit numbers that serve strictly as an end-to-end pipeline sanity check. The only honest, reportable generalization performance metrics on unseen data are the OOF CV scores (<strong>1163 ms</strong> / <strong>850 ms</strong>).
+                </div>
+                <div class="bullet-point">
                     <strong>Path Generality Verification:</strong> The script [predict.py](file:///c:/Users/ok/Desktop/Plivo/predict.py) was tested against a mock directory with arbitrary folder names. The test verified that the file reading and output formatting are path-independent and generalize to unseen directories.
                 </div>
                 <div class="bullet-point">

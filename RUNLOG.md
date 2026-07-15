@@ -52,9 +52,10 @@
   - **Hindi OOF Delay**: **850 ms** (at threshold=0.05)
   - **Average Language Delay**: **1040.0 ms**
 
-### In-Sample Train-Fit Scores (SVC_rbf_FullFeatures)
-- **English Train-Fit Delay**: **841 ms** (AUC = 0.880)
-- **Hindi Train-Fit Delay**: **742 ms** (AUC = 0.883)
+### In-Sample Sanity Check / Train-Fit Scores (SVC_rbf_FullFeatures)
+*These scores are evaluated on the exact same folders the final model was trained on, serving strictly as an end-to-end pipeline sanity check rather than a generalization performance estimate:*
+- **English Train-Fit Delay**: **770 ms** (AUC = 0.884)
+- **Hindi Train-Fit Delay**: **731 ms** (AUC = 0.884)
 
 - **Changes**: Added advanced micro-acoustic features (ZCR spike, local energy drop, breath detector, final-200ms pitch slope) and changed CV to `StratifiedGroupKFold`. Feature selection (Lasso/RF) was implemented inside the folds to avoid leakage.
 - **Rationale**: The side-by-side comparison shows that the model performs significantly better using the full 44-feature set (1163 ms English Delay) compared to pruning down to the top 15 features (1230 ms). The full-feature RBF SVC model was trained on all combined data and saved to `best_model.pkl`.

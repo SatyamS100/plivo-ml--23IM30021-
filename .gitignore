@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints
+features_cache.pkl
+worst_errors.pkl
+
+# Audio Data (Exclude raw wav files)
+*.wav
+eot_data/**/*.wav
+
+# Environment / IDE
+.vscode/
+.idea/
+.venv/
+venv/
+ENV/

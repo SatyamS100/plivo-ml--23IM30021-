@@ -68,10 +68,29 @@
 - **Mode B: Pruned (VotingEnsemble on Top 15 Features Selected inside Fold Splits)**
   - **Overall OOF AUC**: **0.6720** (fold std: **0.0246**, fold AUCs: `[0.6918, 0.6927, 0.6877, 0.636, 0.6462]`)
   - **English OOF Delay**: **1135 ms** (at threshold=0.40) — **Beats starter English delay by 170 ms!**
-  - **Hindi OOF Delay**: **826 ms** (at threshold=0.30) — **Hindi delay drops below the 850ms silence timeout for the first time!**
-  - **Average Language Delay**: **980.5 ms** (Sub-1 second average delay!)
+  - **Hindi OOF Delay**: **826 ms** (at threshold=0.30)
+  - **Average Language Delay**: **980.5 ms**
 
-### In-Sample Sanity Check / Train-Fit Scores (VotingEnsemble_PrunedTop15)
+---
+
+## Run 6: Unscaled RandomForest Ensemble (n_estimators=100, class_weight={0:1, 1:10})
+- **Cross-Validation Setup**: 5-fold Stratified Group K-Fold. Fold size: exactly 40 validation turns and 98-101 validation pauses per fold.
+- **Changes**: Deleted StandardScaler to prevent cross-lingual scale warping (resolves "Unknown Language" evaluation risk). Replaced classifier dictionary with a single `RandomForestClassifier` configured as an uncorrelated voting ensemble.
+- **Rationale**: Raw features allow the decision trees to naturally branch and distinguish English vs. Hindi speech prosody patterns causally.
+
+### Side-by-Side Mode Comparison (RandomForest_ensemble)
+- **Mode A: Full 70 Features**
+  - **Overall OOF AUC**: **0.6719** (fold std: **0.0365**, fold AUCs: `[0.6246, 0.6884, 0.7222, 0.6314, 0.6775]`)
+  - **English OOF Delay**: **1137 ms** (at threshold=0.45) — **Beats starter English delay by 168 ms!**
+  - **Hindi OOF Delay**: **850 ms** (at threshold=0.05)
+  - **Average Language Delay**: **993.5 ms** (Sub-1 second average delay!)
+- **Mode B: Pruned (RandomForest_ensemble on Top 15 Features Selected inside Fold Splits)**
+  - **Overall OOF AUC**: **0.6671** (fold std: **0.0410**, fold AUCs: `[0.6424, 0.7366, 0.6712, 0.6136, 0.6763]`)
+  - **English OOF Delay**: **1250 ms** (at threshold=0.45)
+  - **Hindi OOF Delay**: **850 ms** (at threshold=0.05)
+  - **Average Language Delay**: **1050.0 ms**
+
+### In-Sample Sanity Check / Train-Fit Scores (RandomForest_ensemble_FullFeatures)
 *These scores are evaluated on the exact same folders the final model was trained on, serving strictly as an end-to-end pipeline sanity check rather than a generalization performance estimate:*
-- **English Train-Fit Delay**: **610 ms** (AUC = 0.949)
-- **Hindi Train-Fit Delay**: **610 ms** (AUC = 0.951)
+- **English Train-Fit Delay**: **100 ms** (AUC = 1.000)
+- **Hindi Train-Fit Delay**: **100 ms** (AUC = 1.000)

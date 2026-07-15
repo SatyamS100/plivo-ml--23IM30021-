@@ -57,7 +57,11 @@ def main():
         feat = extract_features_causal(x, sr, float(r["pause_start"]), int(r["pause_index"]))
         
         # Scale and prune features causally using saved parameters
-        feat_scaled = scaler.transform(feat.reshape(1, -1))
+        if scaler is not None:
+            feat_scaled = scaler.transform(feat.reshape(1, -1))
+        else:
+            feat_scaled = feat.reshape(1, -1)
+            
         if top_indices is not None:
             feat_final = feat_scaled[:, top_indices]
         else:
